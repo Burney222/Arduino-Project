@@ -2,8 +2,11 @@
 
 const int button1Pin = 2;  // pushbutton 1 pin
 const int button2Pin = 3;  // pushbutton 2 pin
+
 const int led1Pin = 12;    // LED 1 pin
 const int led2Pin = 13;    // LED 2 pin
+
+const int buzzerPin = 9;   // buzzer pin
 
 int nButtons = 2;
 
@@ -17,6 +20,9 @@ void setup()
   // Set up the LED pins to be an output:
   pinMode(led1Pin, OUTPUT);
   pinMode(led2Pin, OUTPUT);
+  
+  // Buzzer output
+  pinMode(buzzerPin, OUTPUT);
   
   // "Randomise" the random-generator
   randomSeed(analogRead(0));
@@ -113,8 +119,9 @@ int resetstatus(int button1State, int button2State)
 }
 
 
+//Blinking and/or tone patterns
 void blinkrightinput() {
-  for(int i = 0; i < 6; i++) {      
+  for(int i = 0; i < 2; i++) {    
     digitalWrite(led2Pin, HIGH);
     delay(100);
     digitalWrite(led2Pin, LOW);
@@ -122,15 +129,19 @@ void blinkrightinput() {
   }
 }
 
-void blinkwronginput() {
-  digitalWrite(led1Pin, HIGH);  
+
+void blink_tone_wronginput() {
+  digitalWrite(led1Pin, HIGH);
+  tone(buzzerPin, frequency('f'), 300);  
   delay(200);
   digitalWrite(led1Pin, LOW);
-  delay(200);
+  delay(100);
   digitalWrite(led1Pin, HIGH);
-  delay(1500);
+  tone(buzzerPin, frequency('c'), 1200);
+  delay(1200);
   digitalWrite(led1Pin, LOW);
 }
+
 
 void blinknewgame() {
   for(int i = 0; i < 3; i++) {
@@ -143,6 +154,36 @@ void blinknewgame() {
   }
   delay(700);
 }
+
+
+
+int frequency(char note) 
+{
+  // This function takes a note character (a-g), and returns the
+  // corresponding frequency in Hz for the tone() function.
+  
+  int i;
+  const int numNotes = 8;  // number of notes we're storing
+  
+  char names[] = { 'c', 'd', 'e', 'f', 'g', 'a', 'b', 'C' };
+  int frequencies[] = {262, 294, 330, 349, 392, 440, 494, 523};
+  
+  for (i = 0; i < numNotes; i++)  // Step through the notes
+  {
+    if (names[i] == note)         // Is this the one?
+    {
+      return(frequencies[i]);     // Yes! Return the frequency
+    }
+  }
+  return(0);  // We looked through everything and didn't find it,
+              // but we still need to return a value, so return 0.
+}
+
+
+
+
+
+
 
 //Loop = main-function
 void loop()
@@ -169,8 +210,15 @@ void loop()
     
     //Play the sequence stored in random_numbers
     for(int i = 0; i < random_numbers.size(); i++) {
-      if (random_numbers[i] == 1)       digitalWrite(led1Pin, HIGH);
-      else if (random_numbers[i] == 2)  digitalWrite(led2Pin, HIGH);
+      if (random_numbers[i] == 1) {
+        digitalWrite(led1Pin, HIGH);
+        tone(buzzerPin, frequency('c'), 500);
+      }
+        
+      else if (random_numbers[i] == 2)  {
+        digitalWrite(led2Pin, HIGH);
+        tone(buzzerPin, frequency('f'), 500);
+      }
       delay(500);
       digitalWrite(led1Pin, LOW);
       digitalWrite(led2Pin, LOW);
@@ -194,8 +242,14 @@ void loop()
         get_input = false;
         wrong_input = true;
       }
-      else if (button1State == LOW) buttonnumber = 1;  //only button1 was pushed
-      else if (button2State == LOW) buttonnumber = 2;  //only button2 was pushed
+      else if (button1State == LOW) {  //only button1 was pushed
+        buttonnumber = 1;
+        tone(buzzerPin, frequency('c'), 500);
+      }        
+      else if (button2State == LOW) {  //only button2 was pushed
+        buttonnumber = 2;
+        tone(buzzerPin, frequency('f'), 500);
+      }  
       
       if ( (button1State == LOW) || (button2State == LOW) ) {
         delay(500);  //if at least one button was pushed: wait
@@ -218,7 +272,7 @@ void loop()
     }  //end of getting the input-loop
     
     if (wrong_input) {
-      blinkwronginput();
+      blink_tone_wronginput();
       game1 = false;  
       Serial.println("GAME OVER"); //if something wrong was entered in the get_input-loop: light red led and the game is over
     }

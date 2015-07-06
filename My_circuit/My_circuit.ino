@@ -12,6 +12,8 @@ const int led3Pin_red  = 6;
 
 const int buzzerPin = 5;   // buzzer pin
 
+const int potioPin = 0;
+
 int nButtons = 2;
 
 int highscore1;  //variable to hold the highscore of game 1
@@ -173,19 +175,22 @@ void blink_tone_newhighscore() {
   int beats[] = {2,2,2,2};
   int songLength = 4;
   int tempo = 100;
-  
-  for (int i = 0; i < songLength; i++) // step through the song arrays
+  for (int k = 0; k < 3; k++) 
   {
-    int duration = beats[i] * tempo;  // length of note/rest in ms
-    if (i==3) duration *= 3;
-    tone(buzzerPin, frequency(notes[i]), duration);
-    showRainbow(i*60);
-    delay(duration);              // wait for tone to finish
-    delay(tempo/10);              // brief pause between notes
+    for (int i = 0; i < songLength; i++) // step through the song arrays
+    {
+      int duration = beats[i] * tempo;  // length of note/rest in ms
+      if (i==3) duration *= 3;
+      tone(buzzerPin, frequency(notes[i]), duration);
+      showRainbow(i*60);
+      delay(duration);              // wait for tone to finish
+      delay(tempo/10);              // brief pause between notes
+    }
+    digitalWrite(led3Pin_red, LOW);
+    digitalWrite(led3Pin_green, LOW);
+    digitalWrite(led3Pin_blue, LOW);
   }
-  digitalWrite(led3Pin_red, LOW);
-  digitalWrite(led3Pin_green, LOW);
-  digitalWrite(led3Pin_blue, LOW);
+  
   delay(1500);
 }
   
@@ -302,12 +307,21 @@ void showRainbow(int color) {  //takes color-value from 0 to 254
 //starts the single-player game and returns the score
 int game1(int button1State, int button2State) {
   boolean game1 = true;
-  int score; 
+  int score = 0;  //score in this run of the game
+  
+  int difficulty = analogRead(potioPin)/20;  //Read difficulty from the potiontiometer
 
   long randomnumber;
   Vector<long> random_numbers;
+  //Generate starting random numbers according to the difficulty
+  for(int i = 0; i < difficulty; i++) {
+    randomnumber = random(1, nButtons+1);
+    random_numbers.push_back(randomnumber);
+  }
+  
   blinknewgame();
-  if (game1) Serial.println("New Game");
+  Serial.println("\nNew Game");
+  Serial.println("Difficulty: " + String(difficulty));
   while(game1) {
     //Generate new random number and store it at the end of the random_numbers vector
     randomnumber = random(1, nButtons+1);
@@ -364,7 +378,6 @@ int game1(int button1State, int button2State) {
       }
       
       if (buttonnumber == random_numbers[counter]) {  //correct input
-        Serial.println("Correct input");
         if (counter < random_numbers.size()-1) counter++;  //increase counter
         else get_input = false;
       }
@@ -376,21 +389,20 @@ int game1(int button1State, int button2State) {
       
     }  //end of getting the input-loop
     
-    if (wrong_input) {
+    if (wrong_input) {    //wrong input
       blink_tone_wronginput();
       game1 = false;  
     }
-    if (!wrong_input) {
+    if (!wrong_input) {    //right input => continue playing
       blinkrightinput();
+      score = random_numbers.size();
     }
     delay(1500);
     
     //leave this while-loop if game1 = false
   }
   Serial.println("GAME OVER"); //if something wrong was entered in the get_input-loop: light red led and the game is over
-  Serial.println("SCORE:");
-  Serial.println(score);
-  score = random_numbers.size()-1;
+  Serial.println("SCORE: " + String(score));
   return score;
 } 
 
@@ -403,6 +415,7 @@ void loop()
 {
   int button1State, button2State;  // variables to hold the pushbutton states
   int score1;
+  
   
   //Start game1
   score1 = game1(button1State, button2State); 

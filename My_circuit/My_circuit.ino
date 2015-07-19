@@ -2,6 +2,7 @@
 
 const int button1Pin = 2;  // pushbutton 1 pin
 const int button2Pin = 3;  // pushbutton 2 pin
+const int button3Pin = 7;  // pushbutton 3 pin
 
 const int led1Pin = 12;    // LED 1 pin
 const int led2Pin = 13;    // LED 2 pin
@@ -14,7 +15,7 @@ const int buzzerPin = 5;   // buzzer pin
 
 const int potioPin = 0;
 
-int nButtons = 2;
+int nButtons = 3;
 
 int highscore1;  //variable to hold the highscore of game 1
 
@@ -24,6 +25,7 @@ void setup()
   // Set up the pushbutton pins to be an input: INPUT_PULLUP to enable integrated pullup-resistors
   pinMode(button1Pin, INPUT_PULLUP);
   pinMode(button2Pin, INPUT_PULLUP);
+  pinMode(button3Pin, INPUT_PULLUP);
 
   // Set up the LED pins to be an output:
   pinMode(led1Pin, OUTPUT);
@@ -86,7 +88,7 @@ class Vector {
 
 
 //Check whether to light any of the LEDs
-void lightLEDs(int button1State, int button2State)
+void lightLEDs(int button1State, int button2State, int button3State)
 {
   // Buttons: LOW = pressed, HIGH = not pressed
   if (button1State == LOW)        // if button 1 is pressed
@@ -106,11 +108,20 @@ void lightLEDs(int button1State, int button2State)
   {
     digitalWrite(led2Pin, LOW);
   }	
+  
+  if (button3State == LOW)        // if button 1 is pressed
+  {
+    digitalWrite(led3Pin_green, HIGH);  // turn LED 1 on
+  }
+  else if (button3State == HIGH)
+  {
+    digitalWrite(led3Pin_green, LOW);
+  }
 }
   
 
 
-//reset-function
+//reset-function (not integrated at the moment)
 //checks, if reset-condition is fulfilled and returns 1 (reset) or 0 (no reset)
 int resetstatus(int button1State, int button2State)
 {
@@ -305,7 +316,7 @@ void showRainbow(int color) {  //takes color-value from 0 to 254
 
 //game1 function
 //starts the single-player game and returns the score
-int game1(int button1State, int button2State) {
+int game1(int button1State, int button2State, int button3State) {
   boolean game1 = true;
   int score = 0;  //score in this run of the game
   
@@ -336,11 +347,18 @@ int game1(int button1State, int button2State) {
         
       else if (random_numbers[i] == 2)  {
         digitalWrite(led2Pin, HIGH);
-        tone(buzzerPin, frequency('f'), 500);
+        tone(buzzerPin, frequency('e'), 500);
       }
+      
+      else if (random_numbers[i] == 3)  {
+        digitalWrite(led3Pin_green, HIGH);
+        tone(buzzerPin, frequency('g'), 500);
+      }
+      
       delay(500);
       digitalWrite(led1Pin, LOW);
       digitalWrite(led2Pin, LOW);
+      digitalWrite(led3Pin_green, LOW);
       delay(500);
     } 
     
@@ -354,26 +372,27 @@ int game1(int button1State, int button2State) {
       //Read status of the buttons
       button1State = digitalRead(button1Pin);
       button2State = digitalRead(button2Pin);
-      lightLEDs(button1State, button2State);
+      button3State = digitalRead(button3Pin);
+      lightLEDs(button1State, button2State, button3State);
       
-      if ( (button1State == LOW) && (button2State == LOW) ) {  //if both buttons are pressed: wrong_input => gameover!
-        Serial.println("Both buttons pressed simultaneously");
-        get_input = false;
-        wrong_input = true;
-      }
-      else if (button1State == LOW) {  //only button1 was pushed
+      if (button1State == LOW) {  //button1 was pushed
         buttonnumber = 1;
         tone(buzzerPin, frequency('c'), 500);
       }        
-      else if (button2State == LOW) {  //only button2 was pushed
+      else if (button2State == LOW) {  //button2 was pushed
         buttonnumber = 2;
-        tone(buzzerPin, frequency('f'), 500);
-      }  
+        tone(buzzerPin, frequency('e'), 500);
+      } 
+      else if (button3State == LOW) {  //button3 was pushed
+        buttonnumber = 3;
+        tone(buzzerPin, frequency('g'), 500);
+      }   
       
-      if ( (button1State == LOW) || (button2State == LOW) ) {
+      if ( (button1State == LOW) || (button2State == LOW) || (button3State == LOW) ) {
         delay(500);  //if at least one button was pushed: wait
         digitalWrite(led1Pin, LOW);
         digitalWrite(led2Pin, LOW);
+        digitalWrite(led3Pin_green, LOW);
         delay(400);
       }
       
@@ -413,12 +432,12 @@ int game1(int button1State, int button2State) {
 //Loop = main-function
 void loop()
 {
-  int button1State, button2State;  // variables to hold the pushbutton states
+  int button1State, button2State, button3State;  // variables to hold the pushbutton states
   int score1;
   
   
   //Start game1
-  score1 = game1(button1State, button2State); 
+  score1 = game1(button1State, button2State, button3State); 
   if (score1 > highscore1) {
     highscore1 = score1;
     Serial.println("NEW HIGHSCORE!");

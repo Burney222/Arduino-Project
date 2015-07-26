@@ -17,7 +17,7 @@ const int potioPin = 0;
 
 int nButtons = 3;
 
-int highscore1;  //variable to hold the highscore of game 1
+int highscore;  //variable to hold the highscore of game 1
 
 
 void setup()
@@ -37,17 +37,95 @@ void setup()
   // Buzzer output
   pinMode(buzzerPin, OUTPUT);
   
-  // "Randomise" the random-generator
-  randomSeed(analogRead(0));
   
   // Serial Output
   Serial.begin(9600);
   
-  // Set highscore1 to zero
-  highscore1 = 0;
+  // Set highscore to zero
+  highscore = 0;
+  
+  // "Randomise" the random-generator
+  randomSeed(analogRead(1));
+  
+  //Lock
+  boolean lock = true;
+  lightLEDs(LOW, LOW, LOW);
+  delay(2000);
+  lightLEDs(HIGH, HIGH, HIGH);
+  while(lock) {
+    lock = locked();
+  }
+  
+  
 }
 
 
+boolean locked() {
+  int button1State, button2State, button3State;  // variables to hold the pushbutton states
+  
+  long unlock_numbers[3] = {1,2,3}; //unlock sequence
+  int sequencelength = 3;
+  
+  //Get input from buttons
+  boolean get_input = true;
+  boolean wrong_input = false;
+  int counter = 0; 
+  
+    
+  while(get_input) {
+    long buttonnumber = 0;
+    //Read status of the buttons
+    button1State = digitalRead(button1Pin);
+    button2State = digitalRead(button2Pin);
+    button3State = digitalRead(button3Pin);
+  
+    lightLEDs(button1State, button2State, button3State);
+    
+    if (button1State == LOW) {  //button1 was pushed
+      buttonnumber = 1;
+      tone(buzzerPin, frequency('c'), 500);
+    }        
+    else if (button2State == LOW) {  //button2 was pushed
+      buttonnumber = 2;
+      tone(buzzerPin, frequency('e'), 500);
+    } 
+    else if (button3State == LOW) {  //button3 was pushed
+      buttonnumber = 3;
+      tone(buzzerPin, frequency('g'), 500);
+    }   
+    
+
+    if ( (button1State == LOW) || (button2State == LOW) || (button3State == LOW) ) {
+      delay(500);  //if at least one button was pushed: wait
+      lightLEDs(HIGH, HIGH, HIGH);
+      delay(400);
+    }
+    
+
+    if ( (buttonnumber != unlock_numbers[counter]) && (buttonnumber != 0) ) {  //wrong input
+      wrong_input = true;
+    }
+    
+    if(buttonnumber != 0) {  //any button was pushed
+      counter++;
+      if(counter >= sequencelength) get_input = false;
+    }
+  }
+  
+ if (wrong_input) {    //wrong input
+    blink_tone_wronginput();
+    delay(2000);
+    return true;  //locked = true 
+  }
+  if (!wrong_input) {    //right input
+    blinkrightinput();
+    delay(2000);
+    return false;   //not locked anymore
+  }
+  
+  
+}
+  
 
 // Minimal class to replace std::vector
 template<typename Data>
@@ -314,10 +392,10 @@ void showRainbow(int color) {  //takes color-value from 0 to 254
 }
 
 
-//game1 function
+//game function
 //starts the single-player game and returns the score
-int game1(int button1State, int button2State, int button3State) {
-  boolean game1 = true;
+int game(int button1State, int button2State, int button3State) {
+  boolean game = true;
   int score = 0;  //score in this run of the game
   
   int difficulty = analogRead(potioPin)/20;  //Read difficulty from the potiontiometer
@@ -333,7 +411,7 @@ int game1(int button1State, int button2State, int button3State) {
   blinknewgame();
   Serial.println("\nNew Game");
   Serial.println("Difficulty: " + String(difficulty));
-  while(game1) {
+  while(game) {
     //Generate new random number and store it at the end of the random_numbers vector
     randomnumber = random(1, nButtons+1);
     random_numbers.push_back(randomnumber);
@@ -390,9 +468,7 @@ int game1(int button1State, int button2State, int button3State) {
       
       if ( (button1State == LOW) || (button2State == LOW) || (button3State == LOW) ) {
         delay(500);  //if at least one button was pushed: wait
-        digitalWrite(led1Pin, LOW);
-        digitalWrite(led2Pin, LOW);
-        digitalWrite(led3Pin_green, LOW);
+        lightLEDs(HIGH, HIGH, HIGH);
         delay(400);
       }
       
@@ -410,7 +486,7 @@ int game1(int button1State, int button2State, int button3State) {
     
     if (wrong_input) {    //wrong input
       blink_tone_wronginput();
-      game1 = false;  
+      game = false;  
     }
     if (!wrong_input) {    //right input => continue playing
       blinkrightinput();
@@ -418,7 +494,7 @@ int game1(int button1State, int button2State, int button3State) {
     }
     delay(1500);
     
-    //leave this while-loop if game1 = false
+    //leave this while-loop if game = false
   }
   Serial.println("GAME OVER"); //if something wrong was entered in the get_input-loop: light red led and the game is over
   Serial.println("SCORE: " + String(score));
@@ -433,13 +509,12 @@ int game1(int button1State, int button2State, int button3State) {
 void loop()
 {
   int button1State, button2State, button3State;  // variables to hold the pushbutton states
-  int score1;
+  int score;
   
-  
-  //Start game1
-  score1 = game1(button1State, button2State, button3State); 
-  if (score1 > highscore1) {
-    highscore1 = score1;
+  //Start game
+  score = game(button1State, button2State, button3State); 
+  if (score > highscore) {
+    highscore = score;
     Serial.println("NEW HIGHSCORE!");
     blink_tone_newhighscore();
     

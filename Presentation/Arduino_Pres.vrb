@@ -1,0 +1,14 @@
+\frametitle{Schwierigkeiten}\framesubtitle{Speicherung der Sequenz}
+\begin{itemize}\itemsep3ex
+\item Prinzipiell unendlich lange Sequenz denkbar ("`Gedächtniskünstler"')
+\item (Statische) Arrays ungeeignet
+\item Aus C++ bekannter \verb|std::vector| liefert gewünschte Funktionalität, ist jedoch nicht verfügbar
+\item \textbf{Lösung:} Eigene, minimalistische Vector-Klasse mit gewünschten Funktionen
+\begin{itemize}\itemsep1ex
+\item Speichere Sequenz in Array
+\item Array voll: Erzeuge neues Array mit doppelter Größe und kopiere Elemente
+\end{itemize}
+\end{itemize}
+
+
+

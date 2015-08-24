@@ -1,0 +1,274 @@
+\documentclass[xcolor=dvipsnames,10pt]{beamer}
+%\documentclass[xcolor=dvipsnames,10pt]{beamer}
+
+\usepackage{textpos} %for textblock
+
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{listings}
+\usepackage{slashed,subfigure}
+\usepackage{xcolor}
+\usefonttheme{serif}
+
+%SI-UnitX
+\usepackage[separate-uncertainty=true]{siunitx}
+%\sisetup{separate-uncertainties=true}
+\sisetup{
+	per-mode = fraction, 			% Bruchstriche nutzen
+	output-decimal-marker = {.}, 		% Setzt das Dezimaltrennzeichen als Punkt
+	multi-part-units = brackets,
+	exponent-product = \cdot,
+}
+
+
+
+\usepackage{graphicx, dsfont}
+\usepackage{multimedia}
+\usepackage{listings}
+
+\newcommand{\Lagr}{\mathcal{L}}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\B}{\mathcal{B}}
+
+\newcommand{\dd}{\mathrm{d}}
+
+\newcommand{\ii}{\mathrm{i}}
+\newcommand{\bos}{\boldsymbol}
+
+\newcommand{\Nc}{N_{\text{c}}}
+\newcommand{\Nf}{N_{\text{f}}}
+
+% Defining often used decays
+\newcommand{\nonres}{B_s \rightarrow f_2' \mu^+\!\mu^-}
+\newcommand{\res}{B_s \rightarrow f_2' J\!/\!\psi}
+\newcommand{\resmumu}{B_s \rightarrow f_2' J\!/\!\psi (\rightarrow \mu^+ \! \mu^-)}
+\newcommand{\Jpsimumu}{J\!/\!\psi \rightarrow \mu^+ \! \mu^-}
+
+%\usepackage[ngerman]{babel}  %Deutsche Bezeichnungen, Worttrennung
+%\usepackage[utf8]{inputenc}  %Umlaute
+%\usepackage{verbatim}
+%\usepackage[latin1]{inputenc}  %Umlaute
+%\usepackage{tikz}               %Für Kreise und co
+
+\usecolortheme[named=Green]{structure}  %color scheme
+\usetheme{Madrid}  %or Madrid, Boadilla, Warsaw
+\setbeamertemplate{items}[square]  %ball, square, circle
+%\setbeamertemplate{blocks}[default][shadow=true]  %default vs rounded
+\setbeamertemplate{navigation symbols}{}  %no navigation symbols
+\setbeamertemplate{footline}
+{
+\leavevmode
+\hbox{%
+\begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}
+\usebeamerfont{author in head/foot}\insertshortauthor%~~(\insertshortinstitute)
+\end{beamercolorbox}%
+\begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}
+\usebeamerfont{title in head/foot}\insertshorttitle
+\end{beamercolorbox}%
+\begin{beamercolorbox}[wd=.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}
+\usebeamerfont{date in head/foot}\insertshortdate{}\hspace*{2em}
+%\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+\insertframenumber{} / \inserttotalframenumber \hspace*{2ex}
+\end{beamercolorbox}}%
+\vskip0pt
+}
+
+\newcommand{\sh}[1]{#1\hskip-5pt /}
+
+\def\red{\color[rgb]{1,0,0}}
+\def\green{\color[rgb]{0,1,0}}
+\def\blue{\color[rgb]{0,0,1}}
+\def\gray{\color[rgb]{0.45,0.45,0.45}}
+\def\lgreen{\color[rgb]{0,0.5,0.5}}
+
+
+
+%-----------------------------------
+% Title page -----------------------
+%-----------------------------------
+\title[Arduino-Projekt]{\texorpdfstring{Arduino-Projekt: Gedächtnis-Training}{}} %-- \\ Managing  \\ using the ``Scrum'' framework
+\author{Daniel Berninghoff}
+
+\date[27. August 2015]{27. August 2015}
+
+
+
+%\AtBeginSection[]{
+%\frame<beamer>[noframenumbering]{ 
+%\frametitle{Contents}   
+%\tableofcontents[currentsection] 
+% }
+%  }
+
+
+%\AtBeginSection[]
+%{
+ %  \begin{frame}[t]{Contents}
+  %     \tableofcontents[currentsection,subsections]
+  % \end{frame}
+%}
+
+\begin{document}
+
+%---------------------------------------
+% Titlepage ----------------------------
+%---------------------------------------
+\begin{frame}[noframenumbering]
+\titlepage
+
+
+% Two logos bottom-right and bottom-left on the Titlepage
+\begin{figure}		% Bilder nebeneinander
+	\includegraphics[scale=0.1]{Graphics/tudo_logo}
+	%\caption{Gemeinsame Bildunterschrift} % optional
+\end{figure}
+
+
+
+\end{frame}
+
+
+%---------------------------------------
+% Table of Contents ----------------------------
+%---------------------------------------
+%\begin{frame}[t, noframenumbering]{Contents}
+%\tableofcontents
+%\vfill
+%{\gray Based on arXiv:1003.5012}
+%\end{frame}
+
+
+%\section{Project: Analysis of new $\Lambda_b$ decays in a team}
+
+%\frame<beamer>[noframenumbering]{ 
+%\frametitle{Contents}   
+%\tableofcontents[currentsection] 
+% }
+
+%\subsection{Motivation}
+
+
+
+%--------------------------------------------
+% Übersicht ---------------------------------
+%--------------------------------------------
+\begin{frame}\frametitle{Übersicht}
+	\begin{columns}[c]
+		\column{0.5\textwidth}
+		\begin{enumerate} \itemsep3ex
+			\item Idee
+			\item Aufbau
+			\item Ablauf
+			\item Schwierigkeiten
+			\item Ausblick
+		\end{enumerate}
+		
+		\column{0.7\textwidth}
+		\includegraphics[width=0.6\textwidth]{../media/aufbau_gross.jpg}\\
+		 {\small \textbf{Abbildung:} Aufbau}
+	\end{columns}
+
+
+\end{frame}
+
+
+
+
+
+
+%--------------------------------------------
+% Idee --------------------------------------
+%--------------------------------------------
+\begin{frame}\frametitle{Idee}
+	\begin{itemize} \itemsep3ex
+		\item Generierung und Ausgabe einer zufälligen Blink- und Ton-Sequenz 
+		\item Länge der Startsequenz einstellbar
+		\item Versuch, Sequenz durch entsprechende Tastendrücke zu wiederholen
+		\item Bei erfolgreicher Eingabe: Erweiterung der Sequenz um eine LED bzw. einen Ton
+		\item Speicherung der längsten Sequenz pro Session ("`Highscore"')
+	\end{itemize}
+
+\end{frame}
+
+
+
+
+
+%--------------------------------------------
+% Aufbau ------------------------------------
+%--------------------------------------------
+\begin{frame}\frametitle{Aufbau}
+	\centering
+	\includegraphics[width=0.99\textwidth]{../media/aufbau_nah.jpg} \\
+	{\small \textbf{Abbildung:} Nahansicht des Steckbrett-Aufbaus}
+\end{frame}
+
+
+
+
+
+%--------------------------------------------
+% Ablauf ------------------------------------
+%--------------------------------------------
+\begin{frame}\frametitle{Ablauf}
+	\movie[width=12cm,height=7.1cm,showcontrols]{\includegraphics[width=1.0\linewidth]{videobild.jpg}}{geschnitten.mp4}
+\end{frame}
+
+
+
+%--------------------------------------------
+% Schwierigkeiten1 --------------------------
+%--------------------------------------------
+
+\begin{frame}[fragile]\frametitle{Schwierigkeiten}\framesubtitle{(Pseudo)Zufallsgenerator}
+	\begin{itemize}\itemsep3ex
+		\item Verfügbare Funktion \verb|random(min, max)| ist vollständig deterministisch
+		\item Erzeugte Sequenz wäre bei jedem Start des Boards identisch
+		\item Benötigen echtes Zufallselement
+		\item \textbf{Lösung:} Verwende unbenutzten analogen Input-Pin für den Seed
+		\begin{verbatim} randomSeed(analogRead(1)) \end{verbatim}
+
+	
+	\end{itemize}
+
+\end{frame}
+
+
+%--------------------------------------------
+% Schwierigkeiten2 --------------------------
+%--------------------------------------------
+
+\begin{frame}[fragile]\frametitle{Schwierigkeiten}\framesubtitle{Speicherung der Sequenz}
+	\begin{itemize}\itemsep3ex
+		\item Prinzipiell unendlich lange Sequenz denkbar ("`Gedächtniskünstler"')
+		\item (Statische) Arrays ungeeignet
+		\item Aus C++ bekannter \verb|std::vector| liefert gewünschte Funktionalität, ist jedoch nicht verfügbar
+		\item \textbf{Lösung:} Eigene, minimalistische Vector-Klasse mit gewünschten Funktionen
+		\begin{itemize}\itemsep1ex
+			\item Speichere Sequenz in Array
+			\item Array voll: Erzeuge neues Array mit doppelter Größe und kopiere Elemente 
+		\end{itemize}
+	\end{itemize}
+
+	
+	
+\end{frame}
+
+
+
+
+%--------------------------------------------
+% Ausblick ----------------------------------
+%--------------------------------------------
+
+
+\begin{frame}\frametitle{Ausblick}\framesubtitle{Zusätzliche Funktionen}
+	\begin{itemize}\itemsep3ex
+		\item Einstellung der Geschwindigkeit
+		\item Mehrspieler-Modus
+	\end{itemize}
+
+\end{frame}
+
+
+\end{document}
